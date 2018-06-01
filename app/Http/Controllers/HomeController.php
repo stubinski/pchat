@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+
 
 class HomeController extends Controller
 {
@@ -23,6 +27,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+       //return UserResource::collection(User::all());
+       return view('home');
+    }
+
+    public function getFriends()
+    {
+        return UserResource::collection(User::where('id', '!=', Auth()->id())->get());
     }
 }
