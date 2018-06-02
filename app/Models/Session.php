@@ -10,7 +10,7 @@ class Session extends Model
     
     public function chats()
     {
-        return $this->hasManyThrought(Chat::class, Message::class);
+        return $this->hasManyThrough(Chat::class, Message::class);
     }
     
     public function messages()

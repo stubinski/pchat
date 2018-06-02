@@ -27,13 +27,13 @@
 
         </div>
         <div class="card-body" v-chat-scroll>
-            <p class="card-text" v-for="chat in chats" :key="chat.message">
+            <p class="card-text" :class="{'text-right':chat.type == 0}" v-for="chat in chats" :key="chat.message">
                 {{chat.message}}
             </p>
         </div>
         <form class="card-footer" @submit.prevent="send">
             <div class="form-group">
-                <input type="text" class="form-control" placeholder="Wpisz treść wiadomości" :disabled="session_block">
+                <input type="text" class="form-control" placeholder="Wpisz treść wiadomości" :disabled="session_block" v-model="message">
             </div>
         </form>
     </div>
@@ -45,12 +45,23 @@ export default {
     data(){
         return{
             chats:[],
+            message: null,
             session_block:false
         }
     },
     methods: {
         send(){
-            console.log('Wysłano')
+            if(this.message){
+                this.pushToChats(this.message);
+                axios.post(`/send/${this.friend.session.id}`, {
+                    content : this.message,
+                    to_user : this.friend.id
+                });
+                this.message = null;
+            }
+        },
+        pushToChats(message){
+            this.chats.push({message: message, type:0, sent_at: 'Just now'});
         },
         close(){
             this.$emit('close')
@@ -63,16 +74,17 @@ export default {
         },
         unblock(){
             this.session_block = false
+        },
+        getAllMessages(){
+            axios
+                .post(`/session/${this.friend.session.id}/chats`)
+                .then(res => (this.chats = res.data.data));
         }
     },
     created(){
-        this.chats.push(
-            {message: 'Heeey'}, 
-            {message: 'How are you???'},
-            {message: 'jestem ostatnia ;)'}
-        )
+        this.getAllMessages();
     }
-}
+};
 </script>
 
 <style>
