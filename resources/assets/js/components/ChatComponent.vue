@@ -64,6 +64,7 @@
                 }else{
 
                     this.createSession(friend);
+                    friend.session.open = true;
 
                 }
                 
